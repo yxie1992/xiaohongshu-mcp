@@ -1,7 +1,9 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/xpzouying/xiaohongshu-mcp/cookies"
 	"github.com/xpzouying/xiaohongshu-mcp/xiaohongshu"
@@ -132,6 +134,39 @@ func (s *AppServer) listFeedsHandler(c *gin.Context) {
 
 	c.Set("account", "ai-report")
 	respondSuccess(c, result, "获取Feeds列表成功")
+}
+
+// listSavedFeedsHandler 获取当前用户收藏笔记列表
+func (s *AppServer) listSavedFeedsHandler(c *gin.Context) {
+	limit, err := parsePositiveLimit(c.Query("limit"), 20)
+	if err != nil {
+		respondError(c, http.StatusBadRequest, "INVALID_LIMIT",
+			"limit 参数错误", err.Error())
+		return
+	}
+
+	result, err := s.xiaohongshuService.ListSavedFeeds(c.Request.Context(), limit)
+	if err != nil {
+		respondError(c, http.StatusInternalServerError, "LIST_SAVED_FEEDS_FAILED",
+			"获取收藏笔记列表失败", err.Error())
+		return
+	}
+
+	c.Set("account", "ai-report")
+	respondSuccess(c, result, "获取收藏笔记列表成功")
+}
+
+func parsePositiveLimit(limitParam string, defaultLimit int) (int, error) {
+	if limitParam == "" {
+		return defaultLimit, nil
+	}
+
+	parsedLimit, err := strconv.Atoi(limitParam)
+	if err != nil || parsedLimit <= 0 {
+		return 0, fmt.Errorf("limit must be a positive integer")
+	}
+
+	return parsedLimit, nil
 }
 
 // searchFeedsHandler 搜索Feeds

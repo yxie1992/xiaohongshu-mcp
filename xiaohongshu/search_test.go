@@ -3,6 +3,7 @@ package xiaohongshu
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -36,6 +37,12 @@ func TestSearch(t *testing.T) {
 }
 
 func TestSearchWithFilters(t *testing.T) {
+	if testing.Short() {
+		t.Skip("SKIP: short mode")
+	}
+	if os.Getenv("XHS_RUN_INTEGRATION_TESTS") != "1" {
+		t.Skip("SKIP: set XHS_RUN_INTEGRATION_TESTS=1 to run browser integration tests")
+	}
 
 	//t.Skip("SKIP: 测试筛选功能")
 

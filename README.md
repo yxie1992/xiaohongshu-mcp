@@ -611,7 +611,7 @@ npx @modelcontextprotocol/inspector
 
 - 使用 MCP Inspector 测试连接
 - 测试 Ping Server 功能验证连接
-- 检查 List Tools 是否返回 6 个工具
+- 检查 List Tools 是否返回 14 个工具（会随版本变化）
 
 </details>
 
@@ -690,14 +690,20 @@ Cline 是一个强大的 AI 编程助手，支持 MCP 协议集成。
 连接成功后，可使用以下 MCP 工具：
 
 - `check_login_status` - 检查小红书登录状态（无参数）
+- `get_login_qrcode` - 获取登录二维码（无参数）
+- `delete_cookies` - 删除本地 cookies 并重置登录状态（无参数）
 - `publish_content` - 发布图文内容到小红书（必需：title, content, images）
   - `images`: 支持 HTTP 链接或本地绝对路径，推荐使用本地路径
 - `publish_with_video` - 发布视频内容到小红书（必需：title, content, video）
   - `video`: 仅支持本地视频文件绝对路径
 - `list_feeds` - 获取小红书首页推荐列表（无参数）
+- `list_saved_feeds` - 获取当前登录账号收藏列表（可选：limit，默认 20）
 - `search_feeds` - 搜索小红书内容（需要：keyword）
 - `get_feed_detail` - 获取帖子详情（需要：feed_id, xsec_token）
 - `post_comment_to_feed` - 发表评论到小红书帖子（需要：feed_id, xsec_token, content）
+- `reply_comment_in_feed` - 回复帖子评论（需要：feed_id, xsec_token, content，且 comment_id 或 user_id 二选一）
+- `like_feed` - 点赞或取消点赞帖子（需要：feed_id, xsec_token，可选：unlike=true）
+- `favorite_feed` - 收藏或取消收藏帖子（需要：feed_id, xsec_token，可选：unfavorite=true）
 - `user_profile` - 获取用户个人主页信息（需要：user_id, xsec_token）
 
 ### 2.4. 使用示例

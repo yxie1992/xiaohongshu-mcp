@@ -41,6 +41,7 @@
 | POST | `/api/v1/publish` | 发布图文内容 |
 | POST | `/api/v1/publish_video` | 发布视频内容 |
 | GET | `/api/v1/feeds/list` | 获取 Feeds 列表 |
+| GET | `/api/v1/feeds/saved` | 获取收藏笔记列表 |
 | GET/POST | `/api/v1/feeds/search` | 搜索 Feeds |
 | POST | `/api/v1/feeds/detail` | 获取 Feed 详情 |
 | POST | `/api/v1/user/profile` | 获取用户主页信息 |
@@ -321,13 +322,70 @@ GET /api/v1/feeds/list
 - `noteCard.interactInfo`: 互动信息
   - `liked`: 当前用户是否已点赞
   - `collected`: 当前用户是否已收藏
-  - `likedCount`: 点赞数
-  - `collectedCount`: 收藏数
-  - `commentCount`: 评论数
-  - `sharedCount`: 分享数
+- `likedCount`: 点赞数
+- `collectedCount`: 收藏数
+- `commentCount`: 评论数
+- `sharedCount`: 分享数
+
+#### 4.2 获取收藏 Feeds 列表
+
+获取当前登录账号收藏的笔记列表，默认返回前 20 条。
+
+**请求**
+```
+GET /api/v1/feeds/saved?limit=20
 ```
 
-#### 4.2 搜索 Feeds
+**查询参数:**
+- `limit` (int, optional): 返回条数，必须为正整数，默认 20
+
+**响应**
+```json
+{
+  "success": true,
+  "data": {
+    "feeds": [
+      {
+        "xsecToken": "security_token_value",
+        "id": "saved_feed_id_1",
+        "modelType": "note",
+        "noteCard": {
+          "type": "normal",
+          "displayTitle": "收藏笔记标题",
+          "user": {
+            "userId": "author_user_id",
+            "nickname": "作者昵称",
+            "avatar": "https://example.com/avatar.jpg"
+          },
+          "interactInfo": {
+            "liked": false,
+            "likedCount": "80",
+            "collected": true,
+            "collectedCount": "40",
+            "commentCount": "35",
+            "sharedCount": "15"
+          },
+          "cover": {
+            "width": 1080,
+            "height": 1440,
+            "url": "https://example.com/cover.jpg",
+            "urlDefault": "https://example.com/cover_default.jpg"
+          }
+        },
+        "index": 0
+      }
+    ],
+    "count": 20
+  },
+  "message": "获取收藏笔记列表成功"
+}
+```
+
+**响应字段说明:**
+- 响应结构与"获取 Feeds 列表"接口相同
+- `count`: 当前返回的收藏笔记数量
+
+#### 4.3 搜索 Feeds
 
 根据关键词搜索 Feeds，支持 GET 和 POST 两种请求方式。
 
@@ -412,9 +470,8 @@ Content-Type: application/json
 **响应字段说明:**
 - 响应结构与"获取 Feeds 列表"接口相同
 - `video`: 视频笔记时有此字段，图文笔记为 null
-```
 
-#### 4.3 获取 Feed 详情
+#### 4.4 获取 Feed 详情
 
 获取指定 Feed 的详细信息，支持加载全部评论和自定义评论加载配置。
 
@@ -543,7 +600,6 @@ Content-Type: application/json
 - `comments.list[].showTags`: 显示标签（如 "热评"）
 - `comments.cursor`: 分页游标
 - `comments.hasMore`: 是否有更多评论
-```
 
 ---
 
@@ -635,7 +691,6 @@ Content-Type: application/json
   - `name`: 显示名称
   - `count`: 数量
 - `feeds`: 用户发布的笔记列表（结构同 Feed 列表）
-```
 
 #### 5.2 获取当前登录用户信息
 
@@ -702,7 +757,6 @@ GET /api/v1/user/me
 **响应字段说明:**
 - 响应结构与"获取用户主页信息"接口相同
 - 此接口无需 `user_id` 和 `xsec_token` 参数，自动获取当前登录用户信息
-```
 
 ---
 
@@ -797,12 +851,14 @@ Content-Type: application/json
 | 错误代码 | HTTP 状态码 | 描述 |
 |----------|-------------|------|
 | `INVALID_REQUEST` | 400 | 请求参数错误或格式不正确 |
+| `INVALID_LIMIT` | 400 | limit 参数不是正整数 |
 | `MISSING_KEYWORD` | 400 | 搜索时缺少关键词参数 |
 | `STATUS_CHECK_FAILED` | 500 | 检查登录状态失败 |
 | `DELETE_COOKIES_FAILED` | 500 | 删除 Cookies 失败 |
 | `PUBLISH_FAILED` | 500 | 发布图文内容失败 |
 | `PUBLISH_VIDEO_FAILED` | 500 | 发布视频内容失败 |
 | `LIST_FEEDS_FAILED` | 500 | 获取 Feeds 列表失败 |
+| `LIST_SAVED_FEEDS_FAILED` | 500 | 获取收藏 Feeds 列表失败 |
 | `SEARCH_FEEDS_FAILED` | 500 | 搜索 Feeds 失败 |
 | `GET_FEED_DETAIL_FAILED` | 500 | 获取 Feed 详情失败 |
 | `GET_USER_PROFILE_FAILED` | 500 | 获取用户主页信息失败 |
