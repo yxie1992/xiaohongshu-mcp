@@ -39,6 +39,11 @@ type SearchFeedsArgs struct {
 	Filters FilterOption `json:"filters,omitempty" jsonschema:"筛选选项"`
 }
 
+// ListSavedFeedsArgs 获取收藏列表参数
+type ListSavedFeedsArgs struct {
+	Limit int `json:"limit,omitempty" jsonschema:"返回收藏笔记数量，默认20"`
+}
+
 // FilterOption 筛选选项结构体
 type FilterOption struct {
 	SortBy      string `json:"sort_by,omitempty" jsonschema:"排序依据: 综合|最新|最多点赞|最多评论|最多收藏,默认为'综合'"`
@@ -252,6 +257,23 @@ func registerTools(server *mcp.Server, appServer *AppServer) {
 		}),
 	)
 
+	// 工具 6.1: 获取收藏列表
+	mcp.AddTool(server,
+		&mcp.Tool{
+			Name:        "list_saved_feeds",
+			Description: "获取当前登录账号的收藏笔记列表，返回笔记元数据（含 feed_id 和 xsec_token）",
+			Annotations: &mcp.ToolAnnotations{
+				Title:        "List Saved Feeds",
+				ReadOnlyHint: true,
+			},
+		},
+		withPanicRecovery("list_saved_feeds", func(ctx context.Context, req *mcp.CallToolRequest, args ListSavedFeedsArgs) (*mcp.CallToolResult, any, error) {
+			limit := normalizeSavedFeedsLimit(args.Limit)
+			result := appServer.handleListSavedFeeds(ctx, limit)
+			return convertToMCPResult(result), nil, nil
+		}),
+	)
+
 	// 工具 7: 获取Feed详情
 	mcp.AddTool(server,
 		&mcp.Tool{
@@ -433,7 +455,7 @@ func registerTools(server *mcp.Server, appServer *AppServer) {
 		}),
 	)
 
-	logrus.Infof("Registered %d MCP tools", 13)
+	logrus.Infof("Registered %d MCP tools", 14)
 }
 
 // convertToMCPResult 将自定义的 MCPToolResult 转换为官方 SDK 的格式
@@ -474,4 +496,11 @@ func convertStringsToInterfaces(strs []string) []interface{} {
 		result[i] = s
 	}
 	return result
+}
+
+func normalizeSavedFeedsLimit(limit int) int {
+	if limit <= 0 {
+		return 20
+	}
+	return limit
 }

@@ -104,6 +104,13 @@ func TestImageDownloader_generateFileName(t *testing.T) {
 // TestDownloadImage_AntiHotlink 测试下载防盗链图片
 // 验证 PR #412 的修改：添加 User-Agent 和 Referer 解决 403 问题
 func TestDownloadImage_AntiHotlink(t *testing.T) {
+	if testing.Short() {
+		t.Skip("跳过网络依赖测试（short mode）")
+	}
+	if os.Getenv("XHS_RUN_NETWORK_TESTS") != "1" {
+		t.Skip("设置 XHS_RUN_NETWORK_TESTS=1 以运行网络依赖测试")
+	}
+
 	// 快科技的图片，需要 User-Agent 才能下载
 	testURL := "https://img1.mydrivers.com/img/20260213/s_fdac2d21214147019e629fa7f2c8802e.png"
 

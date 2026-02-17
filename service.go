@@ -359,6 +359,30 @@ func (s *XiaohongshuService) ListFeeds(ctx context.Context) (*FeedsListResponse,
 	return response, nil
 }
 
+// ListSavedFeeds 获取当前登录用户的收藏笔记列表
+func (s *XiaohongshuService) ListSavedFeeds(ctx context.Context, limit int) (*FeedsListResponse, error) {
+	b := newBrowser()
+	defer b.Close()
+
+	page := b.NewPage()
+	defer page.Close()
+
+	action := xiaohongshu.NewSavedFeedsAction(page)
+
+	feeds, err := action.ListSavedFeeds(ctx, limit)
+	if err != nil {
+		logrus.Errorf("获取收藏列表失败: %v", err)
+		return nil, err
+	}
+
+	response := &FeedsListResponse{
+		Feeds: feeds,
+		Count: len(feeds),
+	}
+
+	return response, nil
+}
+
 func (s *XiaohongshuService) SearchFeeds(ctx context.Context, keyword string, filters ...xiaohongshu.FilterOption) (*FeedsListResponse, error) {
 	b := newBrowser()
 	defer b.Close()

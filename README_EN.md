@@ -612,7 +612,7 @@ Usage steps:
 
 - Use MCP Inspector to test connection
 - Test Ping Server functionality to verify connection
-- Check if List Tools returns 6 tools
+- Check if List Tools returns 14 tools (subject to version updates)
 
 </details>
 
@@ -691,14 +691,20 @@ Basic configuration template:
 After successful connection, you can use the following MCP tools:
 
 - `check_login_status` - Check RedNote login status (no parameters)
+- `get_login_qrcode` - Get login QR code (no parameters)
+- `delete_cookies` - Delete local cookies and reset login state (no parameters)
 - `publish_content` - Publish image-text content to RedNote (required: title, content, images)
   - `images`: Supports HTTP links or local absolute paths, local paths recommended
 - `publish_with_video` - Publish video content to RedNote (required: title, content, video)
   - `video`: Only supports local video file absolute paths
 - `list_feeds` - Get RedNote homepage recommendation list (no parameters)
+- `list_saved_feeds` - Get saved posts from current logged-in account (optional: limit, default 20)
 - `search_feeds` - Search RedNote content (required: keyword)
 - `get_feed_detail` - Get post details (required: feed_id, xsec_token)
 - `post_comment_to_feed` - Post comments to RedNote posts (required: feed_id, xsec_token, content)
+- `reply_comment_in_feed` - Reply to a post comment (required: feed_id, xsec_token, content, and either comment_id or user_id)
+- `like_feed` - Like or unlike a post (required: feed_id, xsec_token, optional: unlike=true)
+- `favorite_feed` - Favorite or unfavorite a post (required: feed_id, xsec_token, optional: unfavorite=true)
 - `user_profile` - Get user profile information (required: user_id, xsec_token)
 
 ### 2.4. Usage Examples
